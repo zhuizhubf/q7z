@@ -73,6 +73,7 @@ DEFINE_7Z_GUID(ICompressSetOutStreamSize,         0x04, 0x00, 0x34);
 DEFINE_7Z_GUID(ICompressSetBufSize,               0x04, 0x00, 0x35);
 DEFINE_7Z_GUID(ICompressGetSubStreamSize,         0x04, 0x00, 0x30);
 DEFINE_7Z_GUID(ICryptoResetInitVector,            0x04, 0x00, 0x8C);
+DEFINE_7Z_GUID(ICryptoProperties, 0x04, 0x00, 0x80);
 DEFINE_7Z_GUID(ICryptoSetPassword,                0x04, 0x00, 0x90);
 
 DEFINE_7Z_GUID(ICryptoGetTextPassword,            0x05, 0x00, 0x10);

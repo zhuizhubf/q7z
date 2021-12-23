@@ -2,6 +2,7 @@ HEADERS += $$7ZIP_BASE/C/7zCrc.h \
     $$7ZIP_BASE/C/7zTypes.h \
     $$7ZIP_BASE/C/7zVersion.h \
     $$7ZIP_BASE/C/Alloc.h \
+    $$7ZIP_BASE/C/Aes.h \
     $$7ZIP_BASE/C/Bra.h \
     $$7ZIP_BASE/C/Compiler.h \
     $$7ZIP_BASE/C/CpuArch.h \
@@ -26,6 +27,8 @@ SOURCES += $$7ZIP_BASE/C/7zCrc.c \
     $$7ZIP_BASE/C/7zCrcOpt.c \
     $$7ZIP_BASE/C/7zStream.c \
     $$7ZIP_BASE/C/Alloc.c \
+    $$7ZIP_BASE/C/Aes.c \
+    $$7ZIP_BASE/C/AesOpt.c \
     $$7ZIP_BASE/C/Bra.c \
     $$7ZIP_BASE/C/Bra86.c \
     $$7ZIP_BASE/C/BraIA64.c \

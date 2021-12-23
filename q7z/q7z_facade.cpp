@@ -99,6 +99,7 @@ void registerCodecLZMA();
 void registerCodecLZMA2();
 
 void registerCodecCopy();
+void registerCodec7zAES();
 void registerCodecDelta();
 void registerCodecBranch();
 void registerCodecByteSwap();
@@ -122,6 +123,7 @@ void initSevenZ()
         registerCodecLZMA2();
 
         registerCodecCopy();
+        registerCodec7zAES();
         registerCodecDelta();
         registerCodecBranch();
         registerCodecByteSwap();
