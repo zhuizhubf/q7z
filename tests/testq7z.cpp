@@ -74,10 +74,10 @@ private slots:
 
     void testIsSupportedArchive()
     {
-        QCOMPARE(Q7z::isSupportedArchive(":///testdata.7z"), true);
+        QCOMPARE(Q7z::isSupportedArchive(":/testdata.7z"), true);
 
         try {
-            QFile file(":///testdata.7z");
+            QFile file(":/testdata.7z");
             QVERIFY(file.open(QIODevice::ReadOnly));
             QCOMPARE(Q7z::isSupportedArchive(&file), true);
         } catch (...) {
@@ -88,7 +88,7 @@ private slots:
     void testListArchive()
     {
         try {
-            QFile file(":///testdata.7z");
+            QFile file(":/testdata.7z");
             QVERIFY(file.open(QIODevice::ReadOnly));
 
             QVector<Q7z::File> files = Q7z::listArchive(&file);
@@ -108,6 +108,7 @@ private slots:
             QTemporaryFile target;
             QVERIFY(target.open());
             target.setAutoRemove(false);
+            //TODO: password in last
             Q7z::createArchive(&target, QStringList() << path << path2 << "-p1234");
             qDebug() << target;
             QCOMPARE(Q7z::listArchive(&target).count(), 2);
