@@ -25,6 +25,8 @@
 #include <Common/MyCom.h>
 #include <7zip/UI/Common/Update.h>
 
+#include <QString>
+
 QT_BEGIN_NAMESPACE
 class QFileDevice;
 class QStringList;
@@ -54,8 +56,12 @@ namespace Q7z
         UpdateCallback() = default;
         virtual ~UpdateCallback() {}
 
+        void setPassword(const QString &password) { m_password = password; }
+
         MY_UNKNOWN_IMP
         INTERFACE_IUpdateCallbackUI2(;)
+    private:
+        QString m_password;
     };
 
     void Q7Z_EXPORT createArchive(QFileDevice *archive, const QStringList &sources,

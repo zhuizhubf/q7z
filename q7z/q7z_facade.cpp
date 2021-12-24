@@ -568,6 +568,15 @@ STDMETHODIMP ExtractCallback::SetCompleted(const UInt64 *c)
     return S_OK;
 }
 
+STDMETHODIMP ExtractCallback::CryptoGetTextPassword(BSTR *password)
+{
+    if(m_password.isEmpty()) {
+       *password = nullptr;
+    } else {
+       *password = SysAllocString(m_password.toStdWString().c_str());
+    }
+    return S_OK;
+}
 // this method will be called by CFolderOutStream::OpenFile to stream via
 // CDecoder::CodeSpec extracted content to an output stream.
 STDMETHODIMP ExtractCallback::GetStream(UInt32 index, ISequentialOutStream **outStream, Int32 /*askExtractMode*/)
@@ -783,14 +792,23 @@ HRESULT UpdateCallback::OpenFileError(const wchar_t*, DWORD)
 
 HRESULT UpdateCallback::CryptoGetTextPassword2(Int32 *passwordIsDefined, BSTR *password)
 {
-    *password = nullptr;
-    *passwordIsDefined = false;
+    if(m_password.isEmpty()) {
+        *password = nullptr;
+        *passwordIsDefined = false;
+    } else {
+        *password = SysAllocString(m_password.toStdWString().c_str());
+        *passwordIsDefined = true;
+    }
     return S_OK;
 }
 
 HRESULT UpdateCallback::CryptoGetTextPassword(BSTR *password)
 {
-    *password = nullptr;
+    if(m_password.isEmpty()) {
+       *password = nullptr;
+    } else {
+       *password = SysAllocString(m_password.toStdWString().c_str());
+    }
     return E_NOTIMPL;
 }
 
@@ -936,6 +954,11 @@ void createArchive(const QString &archive, const QStringList &sources, QTmpFile 
 
         CUpdateErrorInfo errorInfo;
         CMyComPtr<UpdateCallback> comCallback = callback == 0 ? new UpdateCallback : callback;
+
+        if(options.PasswordEnabled) {
+            comCallback->setPassword(UString2QString(options.Password));
+        }
+
         const HRESULT res = UpdateArchive(&codecs, types, options.ArchiveName, options.Censor,
             options.UpdateOptions, errorInfo, nullptr, comCallback, true);
 

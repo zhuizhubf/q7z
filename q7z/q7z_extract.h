@@ -24,7 +24,7 @@
 
 #include <Common/MyCom.h>
 #include <7zip/Archive/IArchive.h>
-
+#include <7zip/IPassword.h>
 #include <QString>
 
 class CArc;
@@ -35,7 +35,9 @@ QT_END_NAMESPACE
 
 namespace Q7z
 {
-    class Q7Z_EXPORT ExtractCallback : public IArchiveExtractCallback, public CMyUnknownImp
+    class Q7Z_EXPORT ExtractCallback : public IArchiveExtractCallback,
+            public ICryptoGetTextPassword,
+            public CMyUnknownImp
     {
         Q_DISABLE_COPY(ExtractCallback)
 
@@ -43,10 +45,13 @@ namespace Q7z
         ExtractCallback() = default;
         virtual ~ExtractCallback() = default;
 
+        void setPassword(const QString &password) { m_password = password; }
+        STDMETHOD(CryptoGetTextPassword)(BSTR *password);
+
         void setArchive(CArc *carc) { arc = carc; }
         void setTarget(const QString &dir) { targetDir = dir; }
 
-        MY_UNKNOWN_IMP
+        MY_UNKNOWN_IMP1(ICryptoGetTextPassword)
         INTERFACE_IArchiveExtractCallback(;)
 
     protected:
@@ -61,6 +66,8 @@ namespace Q7z
         quint64 total = 0;
         quint64 completed = 0;
         quint32 currentIndex = 0;
+
+        QString m_password;
     };
 
     void Q7Z_EXPORT extractArchive(QFileDevice *archive, const QString &targetDirectory,

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>testdata.7z</file>
+        <file>tests.7z</file>
     </qresource>
 </RCC>

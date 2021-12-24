@@ -28,6 +28,32 @@
 #include <QTest>
 #include <QDebug>
 
+
+class QExtractCallback : public Q7z::ExtractCallback
+{
+public:
+    QExtractCallback() {
+
+    }
+    //做准备
+    bool prepareForFile(const QString & filename) override
+    {
+        qDebug() << "prepareForFile" << filename;
+        return true;
+    }
+    //当前文件
+    void setCurrentFile(const QString &filename) override
+    {
+        qDebug() << "setCurrentFile" << filename;
+        Q_UNUSED(filename)
+    }
+    HRESULT setCompleted(quint64 completed, quint64 total)override
+    {
+        qDebug() << "setCompleted" << completed << total << completed / total;
+        return S_OK;
+    }
+};
+
 class TestQ7Zip : public QObject
 {
     Q_OBJECT
@@ -81,7 +107,9 @@ private slots:
 
             QTemporaryFile target;
             QVERIFY(target.open());
-            Q7z::createArchive(&target, QStringList() << path << path2);
+            target.setAutoRemove(false);
+            Q7z::createArchive(&target, QStringList() << path << path2 << "-p1234");
+            qDebug() << target;
             QCOMPARE(Q7z::listArchive(&target).count(), 2);
         } catch (const Q7z::SevenZipException& e) {
             QFAIL(e.message().toUtf8());
@@ -91,13 +119,13 @@ private slots:
 
         try {
             const QString path1 = tempSourceFile(
-                "Source File 1.",
-                QDir::tempPath() + "/temp file with spaces.XXXXXX"
-            );
+                        "Source File 1.",
+                        QDir::tempPath() + "/temp file with spaces.XXXXXX"
+                        );
             const QString path2 = tempSourceFile(
-                "Source File 2.",
-                QDir::tempPath() + "/temp file with spaces.XXXXXX"
-            );
+                        "Source File 2.",
+                        QDir::tempPath() + "/temp file with spaces.XXXXXX"
+                        );
 
             QTemporaryFile target(QDir::tempPath() + "/target file with spaces.XXXXXX");
             QVERIFY(target.open());
@@ -113,11 +141,12 @@ private slots:
 
     void testExtractArchive()
     {
-        QFile source(":///testdata.7z");
+        QFile source(":/testdata.7z");
         QVERIFY(source.open(QIODevice::ReadOnly));
 
         try {
-            Q7z::extractArchive(&source, QDir::tempPath());
+            QExtractCallback callBack;
+            Q7z::extractArchive(&source, QDir::tempPath(), &callBack);
             QCOMPARE(QFile::exists(QDir::tempPath() + QString("/q7z_facade.cpp")), true);
         } catch (const Q7z::SevenZipException& e) {
             QFAIL(e.message().toUtf8());
@@ -126,6 +155,23 @@ private slots:
         }
     }
 
+
+    void testExtractPasswordArchive()
+    {
+        QFile source(":/tests.7z");
+        QVERIFY(source.open(QIODevice::ReadOnly));
+
+        try {
+            QExtractCallback callBack;
+            callBack.setPassword("1234");
+            Q7z::extractArchive(&source, QDir::tempPath(), &callBack);
+            QCOMPARE(QFile::exists(QDir::tempPath() + QString("/tests.pro")), true);
+        } catch (const Q7z::SevenZipException& e) {
+            QFAIL(e.message().toUtf8());
+        } catch (...) {
+            QFAIL("Unexpected error during extract archive.");
+        }
+    }
 private:
     QString tempSourceFile(const QByteArray &data, const QString &templateName = QString())
     {
